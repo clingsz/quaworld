@@ -4,10 +4,28 @@ public class MapContainer {
 	public MapContainer(int level){
 		root = new Octree(level,0L,0L);
 	}
+	
+	public int[][] retrieve(Long[] range)
+	{
+		int xr = (int)(range[2]-range[1]+1);
+		int yr = (int)(range[4]-range[3]+1);
+		
+		int ret[][] = new int[xr][yr];
+		
+		for(Long i = range[1];i<=range[2];i++)
+			for(Long j = range[3];j<=range[4];j++) {
+				int x = (int)(i - range[1]);
+				int y = (int)(j - range[3]);
+				ret[x][y] = root.getValue(i, j);
+				
+			}
+		return ret;		
+	}
 
 	public static void main(String[]args)	{
-		MapContainer m = new MapContainer(5);
-		System.println
+		MapContainer m = new MapContainer(20);
+		System.out.println(m.root.getValue(5L, 10L));
+		m.root.traverse();
 	}
 }
 
@@ -16,7 +34,7 @@ class Octree {
 	public int value;
 	public int level;
 	public boolean spanned = false;
-	public Octree[] subTree;
+	public Octree[] subTree = new Octree[5];
 	public Long[] range = new Long[5];
 	public Long midx;
 	public Long midy;
@@ -32,7 +50,6 @@ class Octree {
 		range[4] = sy+(1<<level);
 		midx = (range[2]+range[1])/2;
 		midy = (range[3]+range[4])/2;
-
 	}
 
 	public int locate(Long x, Long y){
@@ -74,6 +91,13 @@ class Octree {
 		return;
 	}
 
+	
+	public int getValue(int i, int j) {
+		Long x = (long) i;
+		Long y = (long) j;
+				
+		return getValue(x,y);
+	}
 	public int getValue(Long x, Long y){
 		if (!spanned){
 			if (level==0){
@@ -84,6 +108,7 @@ class Octree {
 				spanned = true;
 				Long[] lx = {0L,range[1],midx+1,range[1],midx+1};
 				Long[] ly = {0L,range[3],range[3],midy+1,midy+1};
+				subTree[0] = null;
 				for (int i = 1;i<=4;i++)
 					subTree[i] = new Octree(level-1,lx[i],ly[i]);
 			}	
@@ -91,7 +116,12 @@ class Octree {
 
 		int pos = locate(x,y);
 		switch(pos){
-		case -1: System.err.println("find the wrong place!"); return -1;
+		case -1: 
+			System.out.println("find the wrong place! Get value "+x+","+y+" returned -1, Level="+level);
+			for(int i = 1;i<=4;i++)
+			System.out.print(range[i]+",");
+			System.out.println();
+			return -1;
 		case 0: return value; 
 		default: return subTree[pos].getValue(x, y);
 		}
@@ -100,12 +130,18 @@ class Octree {
 
 	
 	public void traverse(){
-		String s = "";
-		
+//		String s = "";
+//		s = s+level+" ";
+		System.out.print(level+" ");
+		if (level>0 && spanned)
+			for (int i = 1;i<=4;i++)
+				subTree[i].traverse();
 		
 	}
 
 	public int randGen(){
-		return 1;
+		return (int)(Math.round(Math.random()));
 	}
+
+
 }

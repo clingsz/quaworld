@@ -16,7 +16,7 @@ public class sframe extends JFrame
 	private boolean initial=true;
 	private boolean fps=true;
 	static long GAMESPEED = 10L;
-	private String titleName = "BubbleWorld";
+	private String titleName = "Qua World";
 
 	private int mouseX,mouseY;
 	
@@ -26,8 +26,8 @@ public class sframe extends JFrame
 	// 3 for win!;
 	public int state = 2;
 
-	public int sizeX = 10;
-	public int sizeY = 20;
+	public int sizeX = 800;
+	public int sizeY = 800;
 	
 	private int width = 10*sizeX;
 	private int height = 10*sizeY+30;
@@ -147,9 +147,6 @@ public class sframe extends JFrame
 		Thread game = new Thread(new RepaintThread());
 		game.start();
 
-
-
-
 	}
 
 	//Show paint thing
@@ -161,11 +158,9 @@ public class sframe extends JFrame
 			initial=false;
 		}
 		w.draw(offgx, this);
-
 	}
 
 	public void draw(Graphics g, JFrame f){
-
 
 	}
 
@@ -195,7 +190,6 @@ public class sframe extends JFrame
 			long second = 0L;
 			long second2 = 0L;
 			long second3 = 0L;
-			int moveCount = 0;
 			while(true)	{
 				long start = System.currentTimeMillis();
 
@@ -212,24 +206,17 @@ public class sframe extends JFrame
 				}
 				//Time counter, different from refresh paint;
 				if (true) {
-					moveCount++;
 					second += System.currentTimeMillis() - start;
 					//do per second
 					if (second >= 1000L) {
 //						if (fps) resetTitle(moveCount);
-						moveCount = 0;
 						second = 0L;
 					}
 					//do per 0.1second
 					second2 += System.currentTimeMillis() - start;
 					if (second2>=GAMESPEED){
-						//for (int i=1;i<=tankNum;i++) t[i].go();
 						repaint();
-//						System.out.println(dir+" "+state);
-						for (int i=1;i<=1;i++){
-						if (state == 1)
-							state = w.move(dir);
-						}
+
 						resetTitle();
 						second2 = 0L;
 					}

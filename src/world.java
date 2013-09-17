@@ -8,6 +8,10 @@ public class world {
 	public int m,n;
 	public int scale = 20;
 	public int TOP = 30;
+	public long curx = 0;
+	public long cury = 0;
+	
+	MapContainer mc = new MapContainer(10);
 
 	public world(){
 
@@ -28,21 +32,19 @@ public class world {
 		n = nn;
 		sx = new int[m*n+1];
 		sy = new int[m*n+1];
-		ls = 1;
-		sx[0] = 0;
-		sy[0] = 0;
 		map = new int[m][n];
-		for (int i=0;i<m;i++)
-			for (int j=0;j<n;j++)
-				map[i][j]=0;
-		map[0][0] = 1;
-		genPoint();
-		map[npx][npy] = 2;
-		createSol(m,n);
-		System.out.println("Init ready"+npx+" "+npy+" "+sx[0]+" "+sy[0]);
+		
+		Long range[] = new Long[5];
+		range[1] = curx;
+		range[2] = curx + m;
+		range[3] = cury;
+		range[4] = cury + n;
+		
+		map = mc.retrieve(range);
+		
+		
 	}
 
-	// dir = 1 2 3 4 up down left right
 	int dx[] = {0,0,-1,1};
 	int dy[] = {-1,1,0,0};
 
@@ -61,96 +63,25 @@ public class world {
 		map[npx][npy]=2;
 	}
 
-	public int sol[][];
-	public void createSol(int m,int n){
-		sol = new int[m][n];
 
+//	public int move(int dir){
+//		boolean useAI = true;
+//		int nx,ny;
+//		if (useAI){
+//			dir =sol[sx[0]][sy[0]]; 
+//		}
+//		nx = sx[0]+dx[dir];
+//		ny = sy[0]+dy[dir];		
+//
+//		if (isValid(nx,ny)){
+//			int ans = refreshMap(nx,ny);
+//			return ans;
+//		}
+//
+//
+//		return 0;
 
-		if (m<2||n<2){
-			System.err.println("No soultion!!");
-		}
-
-		if (m%2==0){
-			for(int i =0;i<m;i++) sol[i][0]=2;
-			for(int i =0;i<n;i++) sol[0][i]=1;
-			for(int i =0;i<m;i++) {
-				if (i%2==0) sol[i][n-1]=3;
-				else
-					sol[i][n-1]=0;
-			}
-			for(int i=1;i<=m-2;i++) {
-				if (i%2==0) sol[i][1]=1;
-				else
-					sol[i][1]=3;
-			}
-			for(int i=2;i<=n-2;i++)
-				for (int j=0;j<m;j++)
-				{
-					if (j%2==0)
-						sol[j][i]=1;
-					else
-						sol[j][i]=0;
-				}
-
-		}
-
-
-	}
-
-	public int refreshMap(int nx, int ny){
-		if (map[nx][ny]==0){			
-			map[nx][ny]=1;
-			map[sx[ls-1]][sy[ls-1]]=0;
-			for(int i =ls-1;i>0;i--)
-			{
-				sx[i]=sx[i-1];
-				sy[i]=sy[i-1];
-			}
-			sx[0]=nx;
-			sy[0]=ny;
-			return 1;
-		}
-		else if(map[nx][ny]==2){
-			map[nx][ny]=1;
-			ls = ls+1;
-			for(int i =ls-1;i>0;i--)
-			{
-				sx[i]=sx[i-1];
-				sy[i]=sy[i-1];
-			}
-			sx[0]=nx;
-			sy[0]=ny;
-
-
-			if (ls==n*m) return 3;
-			else
-				genPoint();
-
-			return 1;
-		}
-		else{
-			return 0;
-		}
-	}
-
-	public int move(int dir){
-		boolean useAI = true;
-		int nx,ny;
-		if (useAI){
-			dir =sol[sx[0]][sy[0]]; 
-		}
-		nx = sx[0]+dx[dir];
-		ny = sy[0]+dy[dir];		
-
-		if (isValid(nx,ny)){
-			int ans = refreshMap(nx,ny);
-			return ans;
-		}
-
-
-		return 0;
-
-	}
+//	}
 
 	Color color[] = {Color.black,Color.white,Color.yellow};
 	public void draw(Graphics g, JFrame f){
@@ -162,7 +93,6 @@ public class world {
 			//			g.drawRoundRect(x, y, width, height, arcWidth, arcHeight)
 			g.drawRoundRect(i*scale, j*scale+TOP, scale, scale,scale,scale);
 		}
-
 	}
 
 	public boolean isValid(int x, int y){
@@ -174,16 +104,6 @@ public class world {
 	public static void main(String args[])
 	{
 		world w = new world();
-		int m=4;
-		int n=6;
-		w.createSol(m, n);
-		for(int i=0;i<n;i++){
-			for(int j=0;j<m;j++)
-			{
-				System.out.print(w.sol[j][i]+" ");
-			}
-			System.out.println();
-		}
 	}
 
 }
